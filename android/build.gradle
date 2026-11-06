@@ -51,7 +51,7 @@ dependencies {
   implementation "com.facebook.react:react-android"
   // The Fload Android SDK, built by JitPack from github.com/fload-ai/fload-attribution-android.
   // React Native's Gradle plugin adds JitPack to every project (includeJitpackRepository, on by default).
-  implementation "com.github.fload-ai:fload-attribution-android:1.0.1"
+  implementation "com.github.fload-ai:fload-attribution-android:1.0.2"
 
   testImplementation "junit:junit:4.13.2"
 }
