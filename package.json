@@ -1,0 +1,135 @@
+{
+  "name": "@fload-ai/attribution-react-native",
+  "version": "1.0.0",
+  "description": "Fload install attribution for React Native and Expo: Apple AdServices on iOS, the Play Install Referrer on Android. No IDFA, no tracking prompt.",
+  "main": "./lib/module/index.js",
+  "types": "./lib/typescript/src/index.d.ts",
+  "exports": {
+    ".": {
+      "fload-ai-attribution-react-native-source": "./src/index.tsx",
+      "types": "./lib/typescript/src/index.d.ts",
+      "default": "./lib/module/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "lib",
+    "android",
+    "ios",
+    "*.podspec",
+    "react-native.config.js",
+    "!ios/build",
+    "!ios/Tests",
+    "!ios/Package.swift",
+    "!android/build",
+    "!android/gradle",
+    "!android/gradlew",
+    "!android/gradlew.bat",
+    "!android/local.properties",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__",
+    "!**/.*"
+  ],
+  "scripts": {
+    "example": "yarn workspace @fload-ai/attribution-react-native-example",
+    "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
+    "prepare": "bob build",
+    "typecheck": "tsc",
+    "test": "jest",
+    "vendor:ios": "scripts/vendor-ios-sdk.sh",
+    "check:vendor": "scripts/vendor-ios-sdk.sh --check",
+    "stub": "node tools/ingest-stub.mjs"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "attribution",
+    "apple-ads",
+    "adservices",
+    "install-referrer",
+    "fload",
+    "turbo-module"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fload-ai/fload-attribution-react-native.git"
+  },
+  "author": "Fload (https://fload.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fload-ai/fload-attribution-react-native/issues"
+  },
+  "homepage": "https://github.com/fload-ai/fload-attribution-react-native#readme",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@react-native/babel-preset": "0.88.0",
+    "@react-native/jest-preset": "0.88.0",
+    "@types/react": "^19.2.0",
+    "del-cli": "^8.0.1",
+    "jest": "^29.7.0",
+    "react": "19.3.0",
+    "react-native": "0.88.0",
+    "react-native-builder-bob": "^0.44.1",
+    "turbo": "^2.11.10",
+    "typescript": "^6.0.3"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": ">=0.74"
+  },
+  "workspaces": [
+    "example"
+  ],
+  "packageManager": "yarn@4.18.1",
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      [
+        "module",
+        {
+          "esm": true
+        }
+      ],
+      [
+        "typescript",
+        {
+          "project": "tsconfig.build.json"
+        }
+      ]
+    ]
+  },
+  "codegenConfig": {
+    "name": "FloadAttributionSpec",
+    "type": "modules",
+    "jsSrcsDir": "src",
+    "android": {
+      "javaPackageName": "com.fload.attribution.reactnative"
+    },
+    "ios": {
+      "modulesProvider": {
+        "FloadAttribution": "FloadAttributionModule"
+      }
+    }
+  },
+  "jest": {
+    "preset": "@react-native/jest-preset",
+    "testEnvironmentOptions": {
+      "customExportConditions": [
+        "require",
+        "react-native",
+        "fload-ai-attribution-react-native-source"
+      ]
+    },
+    "modulePathIgnorePatterns": [
+      "<rootDir>/example/node_modules",
+      "<rootDir>/lib/"
+    ]
+  }
+}

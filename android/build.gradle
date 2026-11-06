@@ -1,0 +1,57 @@
+// The New Architecture is on unless the app turns it off (newArchEnabled=false,
+// React Native 0.81 and older). React Native 0.82 and later have only the new one.
+def isNewArchitectureEnabled() {
+  return !rootProject.hasProperty("newArchEnabled") || rootProject.getProperty("newArchEnabled") != "false"
+}
+
+ext.FloadAttribution = [
+  minSdkVersion: 24,
+  compileSdkVersion: 35
+]
+
+ext.getExtOrDefault = { prop ->
+  if (rootProject.ext.has(prop)) {
+    return rootProject.ext.get(prop)
+  }
+  return FloadAttribution[prop]
+}
+
+apply plugin: "com.android.library"
+
+if (project.extensions.findByName("kotlin") == null) {
+  apply plugin: "kotlin-android"
+}
+
+if (isNewArchitectureEnabled()) {
+  apply plugin: "com.facebook.react"
+}
+
+android {
+  namespace "com.fload.attribution.reactnative"
+
+  compileSdkVersion getExtOrDefault("compileSdkVersion")
+
+  defaultConfig {
+    // The Fload Android SDK needs API 24.
+    minSdkVersion Math.max(24, getExtOrDefault("minSdkVersion") as int)
+  }
+
+  testOptions {
+    unitTests.returnDefaultValues = true
+  }
+
+  sourceSets {
+    main {
+      java.srcDirs += isNewArchitectureEnabled() ? ["src/newarch/java"] : ["src/oldarch/java"]
+    }
+  }
+}
+
+dependencies {
+  implementation "com.facebook.react:react-android"
+  // The Fload Android SDK, built by JitPack from github.com/fload-ai/fload-attribution-android.
+  // React Native's Gradle plugin adds JitPack to every project (includeJitpackRepository, on by default).
+  implementation "com.github.fload-ai:fload-attribution-android:1.0.1"
+
+  testImplementation "junit:junit:4.13.2"
+}
