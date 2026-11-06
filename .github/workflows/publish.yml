@@ -1,0 +1,67 @@
+name: Publish to npm
+
+# Manual only. A tag push never publishes. Run it from the release tag
+# (Actions > Publish to npm > Run workflow > "Use workflow from": Tags > 1.0.0).
+# It defaults to a dry run; a real publish needs dry_run unchecked, a tag ref,
+# and package.json's version equal to the tag.
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Only run npm publish --dry-run
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  id-token: write # npm provenance
+
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Real publishes run from a tag that matches package.json
+        if: ${{ !inputs.dry_run }}
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          if [[ "$GITHUB_REF_TYPE" != "tag" || "$GITHUB_REF_NAME" != "$version" ]]; then
+            echo "Run this from the tag $version (got $GITHUB_REF_TYPE $GITHUB_REF_NAME)." >&2
+            exit 1
+          fi
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Use the npm registry
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          registry-url: https://registry.npmjs.org
+
+      - name: Checks
+        run: |
+          yarn typecheck
+          yarn test --maxWorkers=2
+          yarn check:vendor
+
+      - name: Build
+        run: yarn prepare
+
+      - name: Publish (dry run)
+        if: ${{ inputs.dry_run }}
+        run: npm publish --provenance --access public --dry-run
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish
+        if: ${{ !inputs.dry_run }}
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
