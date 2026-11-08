@@ -6,6 +6,10 @@
   Fload iOS SDK 1.1.0 (vendored in the pod) and the Fload Android SDK 1.1.0
   (JitPack), and every request carries `sdk.wrapper`
   `{name: "react-native", version}` with this package's version.
+- Upgrading from 1.0.x: the native `configure` now takes the wrapper's name
+  and version, so ship a new app binary with 1.1.0. An over-the-air (JS-only)
+  update that puts 1.1.0's JavaScript onto a 1.0.x binary breaks on Android's
+  old architecture.
 
 ## 1.0.0
 
