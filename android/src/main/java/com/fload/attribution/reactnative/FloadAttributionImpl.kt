@@ -5,19 +5,25 @@ import android.util.Log
 import com.fload.attribution.Fload
 import com.fload.attribution.FloadLogLevel
 import com.fload.attribution.FloadOptions
+import com.fload.attribution.FloadWrapper
 
 /** What both architectures' modules do: map JS arguments to the Fload Android SDK. */
 internal object FloadAttributionImpl {
   const val NAME = "FloadAttribution"
 
-  fun configure(context: Context, key: String, endpoint: String?, logLevel: String) {
+  fun configure(context: Context, key: String, endpoint: String?, logLevel: String, wrapperName: String, wrapperVersion: String) {
+    Fload.configure(context, key, options(endpoint, logLevel, wrapperName, wrapperVersion))
+  }
+
+  /** The SDK's options. The wrapper (this package's name and version, from JS) goes on every request as `sdk.wrapper`. */
+  fun options(endpoint: String?, logLevel: String, wrapperName: String, wrapperVersion: String): FloadOptions {
     val level = logLevel(logLevel)
-    val options = if (endpoint.isNullOrEmpty()) {
-      FloadOptions(logLevel = level)
+    val wrapper = FloadWrapper(wrapperName, wrapperVersion)
+    return if (endpoint.isNullOrEmpty()) {
+      FloadOptions(logLevel = level, wrapper = wrapper)
     } else {
-      FloadOptions(endpoint = endpoint, logLevel = level)
+      FloadOptions(endpoint = endpoint, logLevel = level, wrapper = wrapper)
     }
-    Fload.configure(context, key, options)
   }
 
   fun setUserId(userId: String) {

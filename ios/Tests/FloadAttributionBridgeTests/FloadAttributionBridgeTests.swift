@@ -15,9 +15,33 @@ final class FloadAttributionBridgeTests: XCTestCase {
         XCTAssertEqual(FloadAttributionBridge.level("verbose"), .warning)
     }
 
+    func testOptionsNameTheWrapperAndTheVersionJsSends() {
+        let options = FloadAttributionBridge.options(
+            endpoint: nil, logLevel: "debug", wrapperName: "react-native", wrapperVersion: "1.1.0"
+        )
+        XCTAssertEqual(options?.wrapper, FloadWrapper(name: "react-native", version: "1.1.0"))
+        XCTAssertEqual(options?.endpoint, URL(string: "https://ingest.fload.com"))
+        XCTAssertEqual(options?.logLevel, .debug)
+    }
+
+    func testOptionsWithAnEndpointNameTheWrapperToo() {
+        let options = FloadAttributionBridge.options(
+            endpoint: "http://localhost:3999", logLevel: "warning", wrapperName: "react-native", wrapperVersion: "1.1.0"
+        )
+        XCTAssertEqual(options?.endpoint, URL(string: "http://localhost:3999"))
+        XCTAssertEqual(options?.wrapper, FloadWrapper(name: "react-native", version: "1.1.0"))
+    }
+
+    func testAnEmptyEndpointMeansFloads() {
+        let options = FloadAttributionBridge.options(
+            endpoint: "", logLevel: "warning", wrapperName: "react-native", wrapperVersion: "1.1.0"
+        )
+        XCTAssertEqual(options?.endpoint, URL(string: "https://ingest.fload.com"))
+    }
+
     func testTheObjectiveCNamesTheModuleCallsExist() {
         let bridge: AnyClass = FloadAttributionBridge.self
-        XCTAssertTrue(bridge.responds(to: NSSelectorFromString("configureWithKey:endpoint:logLevel:")))
+        XCTAssertTrue(bridge.responds(to: NSSelectorFromString("configureWithKey:endpoint:logLevel:wrapperName:wrapperVersion:")))
         XCTAssertTrue(bridge.responds(to: NSSelectorFromString("setUserId:")))
         XCTAssertTrue(bridge.responds(to: NSSelectorFromString("installReference")))
         XCTAssertEqual(NSStringFromClass(bridge), "FloadAttributionBridge")

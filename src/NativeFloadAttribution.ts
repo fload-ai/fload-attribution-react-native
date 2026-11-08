@@ -6,7 +6,8 @@ import { TurboModuleRegistry, type TurboModule } from 'react-native';
  * Apps use `FloadAttribution` from the package root, not this.
  */
 export interface Spec extends TurboModule {
-  configure(key: string, endpoint: string | null, logLevel: string): void;
+  /** `wrapperName` and `wrapperVersion` name this package to Fload (`sdk.wrapper`). */
+  configure(key: string, endpoint: string | null, logLevel: string, wrapperName: string, wrapperVersion: string): void;
   setUserId(userId: string): void;
   getInstallReference(): Promise<string | null>;
 }

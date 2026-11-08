@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
+import packageJson from '../../package.json';
 
 type Native = {
   configure: jest.Mock;
@@ -6,13 +7,17 @@ type Native = {
   getInstallReference: jest.Mock;
 };
 
-function load(native: Native | null) {
+function loadModule(native: Native | null) {
   let api!: typeof import('../index');
   jest.isolateModules(() => {
     jest.doMock('../NativeFloadAttribution', () => ({ __esModule: true, default: native }));
     api = require('../index');
   });
-  return api.FloadAttribution;
+  return api;
+}
+
+function load(native: Native | null) {
+  return loadModule(native).FloadAttribution;
 }
 
 function fakeNative(): Native {
@@ -38,13 +43,37 @@ describe('with the native module', () => {
   it('configure passes the key, no endpoint and the warning level by default', () => {
     const native = fakeNative();
     load(native).configure('fload_pk_test');
-    expect(native.configure).toHaveBeenCalledWith('fload_pk_test', null, 'warning');
+    expect(native.configure).toHaveBeenCalledWith(
+      'fload_pk_test',
+      null,
+      'warning',
+      'react-native',
+      packageJson.version
+    );
+  });
+
+  it('configure names this wrapper and its package.json version (FLO-3957)', () => {
+    const native = fakeNative();
+    load(native).configure('fload_pk_test');
+    const [, , , wrapperName, wrapperVersion] = native.configure.mock.calls[0] ?? [];
+    expect(wrapperName).toBe('react-native');
+    expect(wrapperVersion).toBe(packageJson.version);
+  });
+
+  it('VERSION is the package.json version', () => {
+    expect(loadModule(fakeNative()).VERSION).toBe(packageJson.version);
   });
 
   it('configure passes the endpoint and log level it is given', () => {
     const native = fakeNative();
     load(native).configure('fload_pk_test', { endpoint: 'http://localhost:3999', logLevel: 'debug' });
-    expect(native.configure).toHaveBeenCalledWith('fload_pk_test', 'http://localhost:3999', 'debug');
+    expect(native.configure).toHaveBeenCalledWith(
+      'fload_pk_test',
+      'http://localhost:3999',
+      'debug',
+      'react-native',
+      packageJson.version
+    );
   });
 
   it('configure refuses an unknown log level before reaching native code', () => {

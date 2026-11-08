@@ -16,8 +16,8 @@ class FloadAttributionModule(reactContext: ReactApplicationContext) :
   override fun getName(): String = FloadAttributionImpl.NAME
 
   @ReactMethod
-  fun configure(key: String, endpoint: String?, logLevel: String) {
-    FloadAttributionImpl.configure(reactApplicationContext, key, endpoint, logLevel)
+  fun configure(key: String, endpoint: String?, logLevel: String, wrapperName: String, wrapperVersion: String) {
+    FloadAttributionImpl.configure(reactApplicationContext, key, endpoint, logLevel, wrapperName, wrapperVersion)
   }
 
   @ReactMethod

@@ -1,6 +1,6 @@
 {
   "name": "@fload-ai/attribution-react-native",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Fload install attribution for React Native and Expo: Apple AdServices on iOS, the Play Install Referrer on Android. No IDFA, no tracking prompt.",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",

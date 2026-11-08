@@ -11,8 +11,8 @@ internal object Architecture {
 class FloadAttributionModule(reactContext: ReactApplicationContext) :
   NativeFloadAttributionSpec(reactContext) {
 
-  override fun configure(key: String, endpoint: String?, logLevel: String) {
-    FloadAttributionImpl.configure(reactApplicationContext, key, endpoint, logLevel)
+  override fun configure(key: String, endpoint: String?, logLevel: String, wrapperName: String, wrapperVersion: String) {
+    FloadAttributionImpl.configure(reactApplicationContext, key, endpoint, logLevel, wrapperName, wrapperVersion)
   }
 
   override fun setUserId(userId: String) {
