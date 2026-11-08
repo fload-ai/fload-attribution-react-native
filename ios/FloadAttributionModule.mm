@@ -17,9 +17,17 @@ RCT_EXPORT_MODULE(FloadAttribution)
   return NO;
 }
 
-RCT_EXPORT_METHOD(configure:(NSString *)key endpoint:(NSString * _Nullable)endpoint logLevel:(NSString *)logLevel)
+RCT_EXPORT_METHOD(configure:(NSString *)key
+                  endpoint:(NSString * _Nullable)endpoint
+                  logLevel:(NSString *)logLevel
+                  wrapperName:(NSString *)wrapperName
+                  wrapperVersion:(NSString *)wrapperVersion)
 {
-  [FloadAttributionBridge configureWithKey:key endpoint:endpoint logLevel:logLevel];
+  [FloadAttributionBridge configureWithKey:key
+                                  endpoint:endpoint
+                                  logLevel:logLevel
+                               wrapperName:wrapperName
+                            wrapperVersion:wrapperVersion];
 }
 
 RCT_EXPORT_METHOD(setUserId:(NSString *)userId)

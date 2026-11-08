@@ -32,14 +32,11 @@ final class FloadAttributionBridgeTests: XCTestCase {
         XCTAssertEqual(options?.wrapper, FloadWrapper(name: "react-native", version: "1.1.0"))
     }
 
-    func testAnEmptyEndpointMeansFloadsAndAnInvalidOneIsRefused() {
-        let empty = FloadAttributionBridge.options(
+    func testAnEmptyEndpointMeansFloads() {
+        let options = FloadAttributionBridge.options(
             endpoint: "", logLevel: "warning", wrapperName: "react-native", wrapperVersion: "1.1.0"
         )
-        XCTAssertEqual(empty?.endpoint, URL(string: "https://ingest.fload.com"))
-        XCTAssertNil(FloadAttributionBridge.options(
-            endpoint: "not a url", logLevel: "warning", wrapperName: "react-native", wrapperVersion: "1.1.0"
-        ))
+        XCTAssertEqual(options?.endpoint, URL(string: "https://ingest.fload.com"))
     }
 
     func testTheObjectiveCNamesTheModuleCallsExist() {

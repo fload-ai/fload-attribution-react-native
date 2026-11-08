@@ -10,8 +10,11 @@ export interface FloadOptions {
   logLevel?: FloadLogLevel;
 }
 
-/** This package's version. */
-export const VERSION = '1.0.0';
+/** This package's version. A test holds it equal to package.json's. */
+export const VERSION = '1.1.0';
+
+/** This wrapper's name for Fload, sent with every request as `sdk.wrapper`. */
+const WRAPPER_NAME = 'react-native';
 
 const LOG_LEVELS: readonly FloadLogLevel[] = ['none', 'error', 'warning', 'info', 'debug'];
 
@@ -61,7 +64,7 @@ export const FloadAttribution = {
     if (!LOG_LEVELS.includes(logLevel)) {
       throw new TypeError(`FloadAttribution.configure: logLevel must be one of ${LOG_LEVELS.join(', ')}`);
     }
-    native()?.configure(key, options.endpoint ?? null, logLevel);
+    native()?.configure(key, options.endpoint ?? null, logLevel, WRAPPER_NAME, VERSION);
   },
 
   /**
