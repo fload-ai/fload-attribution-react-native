@@ -5,7 +5,8 @@ name: Publish to npm
 # It defaults to a dry run; a real publish needs dry_run unchecked, a tag ref,
 # and package.json's version equal to the tag.
 # It signs in by npm trusted publishing (OIDC), with no npm token: the
-# package's trusted publisher on npmjs.com names this repository and publish.yml.
+# package's trusted publisher on npmjs.com names this repository, publish.yml
+# and the environment npm.
 on:
   workflow_dispatch:
     inputs:
@@ -24,6 +25,10 @@ concurrency:
 
 jobs:
   publish:
+    # A real publish runs in the "npm" environment, which admits release tags
+    # only; npm's trusted publisher for this package names that environment.
+    # A dry run needs no credential, so it runs outside it, from any ref.
+    environment: ${{ !inputs.dry_run && 'npm' || '' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
