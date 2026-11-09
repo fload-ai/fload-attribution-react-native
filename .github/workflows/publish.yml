@@ -4,6 +4,9 @@ name: Publish to npm
 # (Actions > Publish to npm > Run workflow > "Use workflow from": Tags > 1.0.0).
 # It defaults to a dry run; a real publish needs dry_run unchecked, a tag ref,
 # and package.json's version equal to the tag.
+# It signs in by npm trusted publishing (OIDC), with no npm token: the
+# package's trusted publisher on npmjs.com names this repository, publish.yml
+# and the environment npm.
 on:
   workflow_dispatch:
     inputs:
@@ -14,7 +17,7 @@ on:
 
 permissions:
   contents: read
-  id-token: write # npm provenance
+  id-token: write # npm trusted publishing (OIDC) and provenance
 
 concurrency:
   group: publish
@@ -22,6 +25,10 @@ concurrency:
 
 jobs:
   publish:
+    # A real publish runs in the "npm" environment, which admits release tags
+    # only; npm's trusted publisher for this package names that environment.
+    # A dry run needs no credential, so it runs outside it, from any ref.
+    environment: ${{ !inputs.dry_run && 'npm' || '' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -45,6 +52,12 @@ jobs:
           node-version-file: .nvmrc
           registry-url: https://registry.npmjs.org
 
+      # Trusted publishing's OIDC exchange needs npm CLI 11.5.1 or newer.
+      - name: npm 11.21.1
+        run: |
+          npm install -g npm@11.21.1
+          test "$(npm --version)" = 11.21.1
+
       - name: Checks
         run: |
           yarn typecheck
@@ -57,11 +70,7 @@ jobs:
       - name: Publish (dry run)
         if: ${{ inputs.dry_run }}
         run: npm publish --provenance --access public --dry-run
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish
         if: ${{ !inputs.dry_run }}
         run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
